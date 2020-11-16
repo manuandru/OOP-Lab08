@@ -6,13 +6,17 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.util.Random;
-
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
 
 /**
  * This class is a simple application that writes a random number on a file.
@@ -36,9 +40,20 @@ public class BadIOGUI {
      */
     public BadIOGUI() {
         final JPanel canvas = new JPanel();
+        // 1. Create new JPanel
+        final JPanel anotherPanel = new JPanel();
         canvas.setLayout(new BorderLayout());
+        anotherPanel.setLayout(new BoxLayout(anotherPanel, BoxLayout.X_AXIS));
         final JButton write = new JButton("Write on file");
-        canvas.add(write, BorderLayout.CENTER);
+
+        // 2.1 Create a new "Read" button
+        final JButton read = new JButton("Read");
+
+        canvas.add(anotherPanel, BorderLayout.CENTER);
+
+        // 1.2 Add it to the JPanel created
+        anotherPanel.add(write);
+        anotherPanel.add(read);
         frame.setContentPane(canvas);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         /*
@@ -60,6 +75,20 @@ public class BadIOGUI {
                     JOptionPane.showMessageDialog(frame, e1, "Error", JOptionPane.ERROR_MESSAGE);
                     e1.printStackTrace();
                 }
+            }
+        });
+
+        // 2.4 Write a new ActionListener
+        read.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent e) {
+
+                // 3.1 read from file
+                try {
+                    System.out.println(Files.readAllLines(FileSystems.getDefault().getPath(PATH)));
+                } catch (IOException e1) {
+                    System.out.println("Errore in lettura");
+                }
+
             }
         });
     }
@@ -87,6 +116,7 @@ public class BadIOGUI {
          * OK, ready to pull the frame onscreen
          */
         frame.setVisible(true);
+        frame.pack();
     }
 
     /**
