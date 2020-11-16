@@ -10,9 +10,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
  * This class is a simple application that writes a random number on a file.
@@ -33,10 +35,29 @@ public class MiniGUI {
      */
     public MiniGUI() {
         final JPanel canvas = new JPanel();
+        // 1.1 Create a new JPanel
+        final JPanel anotherPanel = new JPanel();
         canvas.setLayout(new BorderLayout());
+
+        // 1.2 Use an horizontal BoxLayout as layout
+        anotherPanel.setLayout(new BoxLayout(anotherPanel, BoxLayout.X_AXIS));
+
+        // 2.1 Create a new "Result" text field
+        final JTextField textField = new JTextField();
+
         final JButton write = new JButton("Print a random number on standard output");
-        canvas.add(write, BorderLayout.CENTER);
+        //canvas.add(write, BorderLayout.CENTER);
         frame.setContentPane(canvas);
+
+        // 1.3 Set the new JPanel as the only content of the center of the current BorderLayout
+        canvas.add(anotherPanel, BorderLayout.CENTER);
+
+        // 1.4 Add the JButton to the new panel
+        anotherPanel.add(write);
+
+        // 2.2 Add it to the external JPanel
+        canvas.add(textField, BorderLayout.NORTH);
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         /*
          * Handlers
@@ -44,7 +65,11 @@ public class MiniGUI {
         write.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                System.out.println(rng.nextInt());
+                final String currentRandom = Integer.toString(rng.nextInt());
+                System.out.println(currentRandom);
+
+                // 3.1 The text field displays the same number that gets printed
+                textField.setText(currentRandom);
             }
         });
     }
@@ -72,6 +97,10 @@ public class MiniGUI {
          * OK, ready to pull the frame onscreen
          */
         frame.setVisible(true);
+
+        // 1.6 In display(), use JFrame.pack() to resize the frame 
+        //     to the minimum size prior to displaying
+        frame.pack();
     }
 
     /**
