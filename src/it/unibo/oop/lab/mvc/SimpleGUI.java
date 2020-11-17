@@ -1,9 +1,18 @@
 package it.unibo.oop.lab.mvc;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 
 /**
  * A very simple program using a graphical interface.
@@ -12,6 +21,7 @@ import javax.swing.JFrame;
 public final class SimpleGUI {
 
     private final JFrame frame = new JFrame();
+    private final Controller controller = new ControllerImpl();
 
     /*
      * Once the Controller is done, implement this class in such a way that:
@@ -60,6 +70,51 @@ public final class SimpleGUI {
          * on screen. Results may vary, but it is generally the best choice.
          */
         frame.setLocationByPlatform(true);
+
+        // 4.
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        // 3.
+        final JPanel canvas = new JPanel(new BorderLayout());
+        final JPanel southCanvas = new JPanel(new GridLayout(1, 2));
+
+        final JTextField textField = new JTextField();
+        final JTextArea textArea = new JTextArea();
+        final JButton printButton = new JButton("Print");
+        final JButton historyButton = new JButton("Show history");
+
+        canvas.add(textField, BorderLayout.NORTH);
+        canvas.add(textArea, BorderLayout.CENTER);
+        canvas.add(southCanvas, BorderLayout.SOUTH);
+
+        southCanvas.add(printButton);
+        southCanvas.add(historyButton);
+
+        frame.add(canvas);
+
+        printButton.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent e) {
+                SimpleGUI.this.controller.setNextString(textField.getText());
+                SimpleGUI.this.controller.printString();
+            }
+        });
+
+        historyButton.addActionListener(new ActionListener() {
+            public void actionPerformed(final ActionEvent e) {
+                String stringToPrint = "";
+                for (final String item : SimpleGUI.this.controller.printedStrings()) {
+                    stringToPrint = stringToPrint.concat(item + "\n");
+                }
+                textArea.setText(stringToPrint);
+            }
+        });
     }
 
+    public void display() {
+        this.frame.setVisible(true);
+    }
+
+    public static void main(final String... args) {
+        new SimpleGUI().display();
+    }
 }
