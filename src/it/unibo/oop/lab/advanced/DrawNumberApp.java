@@ -1,7 +1,11 @@
 package it.unibo.oop.lab.advanced;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import java.io.FileInputStream;
@@ -15,13 +19,16 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
     private static final String CONFIG_FILE_PATH = "res/config.yml";
     private static final String FILE_ERROR_STRING = "File not found, starting with default config...";
     private static final String IOERROR = "I/O Error";
+    private static final String OUTPUT_FILE_NAME = "output.txt";
+    private final File file = new File(System.getProperty("user.home") 
+            + File.separator + OUTPUT_FILE_NAME);
     private static final int MIN = 0;
     private static final int MAX = 100;
     private static final int ATTEMPTS = 10;
 
 
     private final DrawNumber model;
-    private final DrawNumberView view;
+    private final List<DrawNumberView> views;
 
     private int min;
     private int max;
@@ -32,11 +39,22 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
      * 
      */
     public DrawNumberApp() {
-        this.view = new DrawNumberViewImpl();
-        this.view.setObserver(this);
+        this.views = new ArrayList<>();
+        this.views.add(new DrawNumberViewImpl());
+        this.views.add(new DrawNumberViewImpl());
+        this.views.add(new DrawNumberViewPrinter(System.out));
+        try {
+            this.views.add(new DrawNumberViewPrinter(new PrintStream(this.file)));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        for (final DrawNumberView view : this.views) {
+            view.setObserver(this);
+            view.start();
+        }
         this.setConfigFromFile(CONFIG_FILE_PATH);
         this.model = new DrawNumberImpl(this.min, this.max, this.attempts);
-        this.view.start();
     }
 
     /**
@@ -55,12 +73,16 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
             st.nextToken();
             this.attempts = Integer.parseInt(st.nextToken());
         } catch (FileNotFoundException e) {
-            this.view.displayError(FILE_ERROR_STRING);
+            for (final DrawNumberView view : this.views) {
+                view.displayError(FILE_ERROR_STRING);
+            }
             this.min = MIN;
             this.max = MAX;
             this.attempts = ATTEMPTS;
         } catch (IOException e) {
-            this.view.displayError(IOERROR);
+            for (final DrawNumberView view : this.views) {
+                view.displayError(IOERROR);
+            }
         }
     }
 
@@ -68,11 +90,17 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
     public void newAttempt(final int n) {
         try {
             final DrawResult result = model.attempt(n);
-            this.view.result(result);
+            for (final DrawNumberView view : this.views) {
+                view.result(result);
+            }
         } catch (IllegalArgumentException e) {
-            this.view.numberIncorrect();
+            for (final DrawNumberView view : this.views) {
+                view.numberIncorrect();
+            }
         } catch (AttemptsLimitReachedException e) {
-            view.limitsReached();
+            for (final DrawNumberView view : this.views) {
+                view.limitsReached();
+            }
         }
     }
 

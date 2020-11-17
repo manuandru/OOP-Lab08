@@ -115,6 +115,7 @@ public final class DrawNumberViewImpl implements DrawNumberView {
     @Override
     public void limitsReached() {
         JOptionPane.showMessageDialog(frame, "You lost" + NEW_GAME, "Lost", JOptionPane.WARNING_MESSAGE);
+        observer.resetGame();
     }
 
     private void plainMessage(final String msg) {
