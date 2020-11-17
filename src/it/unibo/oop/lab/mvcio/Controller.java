@@ -16,6 +16,8 @@ public class Controller {
      * 
      * Implement this class with:
      */
+
+    //I could use 3 separate const
     private File file = new File(System.getProperty("user.home") 
             + File.separator + FILE_NAME_STRING);
 
