@@ -21,6 +21,7 @@ public final class DrawNumberViewImpl implements DrawNumberView {
     private static final String RESET = "Reset";
     private static final String GO = "Go";
     private static final String NEW_GAME = ": a new game starts!";
+    private static final String ERROR = "Error";
 
     private DrawNumberViewObserver observer;
     private final JFrame frame = new JFrame(FRAME_NAME);
@@ -118,5 +119,10 @@ public final class DrawNumberViewImpl implements DrawNumberView {
 
     private void plainMessage(final String msg) {
         JOptionPane.showMessageDialog(frame, msg, "Result", JOptionPane.PLAIN_MESSAGE);
+    }
+
+    @Override
+    public void displayError(final String message) {
+        JOptionPane.showMessageDialog(frame, message, ERROR, JOptionPane.ERROR_MESSAGE);
     }
 }
